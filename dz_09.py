@@ -1,4 +1,4 @@
-nums = {}
+contacts = {}
 
 
 def user_error(func):
@@ -16,44 +16,54 @@ def user_error(func):
     return inner
 
 
+def normalize(phone):
+    if len(phone) == 12 and phone.startswith("380") or len(phone) == 13 and phone.startswith("+380"):
+        return True
+    else:
+        return f"{phone} is wrong phone. Phone must start with '+380' or '380', and have minimum 12 symbols"
+
+
 @user_error
 def add_contact(*args):
     name = args[0].capitalize()
     phone = args[1]
-    if len(phone) == 12 and phone.startswith("380") or len(phone) == 13 and phone.startswith("+380"):
-        nums[name] = int(phone)
+    if normalize(phone) == True:
+        contacts[name] = int(phone)
         return f"Add record {name = }, {phone = }"
     else:
-        return f"{phone} is wrong phone. Phone must start with '+380' or '380', and have minimum 12 symbols"
+        return normalize(phone)
 
 
 @user_error
 def change_phone(*args):
     name = args[0].capitalize()
     new_phone = args[1]
-    if len(new_phone) == 12 and new_phone.startswith("380") or len(new_phone) == 13 and new_phone.startswith("+380"):
-        rec = nums[name]
-        if rec:
-            nums[name] = int(new_phone)
-            return f"Change record {name = }, {new_phone = }"
+    rec = contacts[name]
+    if rec and normalize(new_phone) == True:
+        contacts[name] = int(new_phone)
+        return f"Change record {name = }, {new_phone = }"
     else:
-        return f"{new_phone} is wrong phone. Phone must start with '+380' or '380', and have minimum 12 symbols"
+        return normalize(new_phone)
+
 
 @user_error
 def show_num(arg):
     cap_arg = arg.capitalize()
-    if cap_arg in nums.keys():
-        return nums[cap_arg]
+    if cap_arg in contacts.keys():
+        return contacts[cap_arg]
     else:
         return f"I don't know {arg}'s number. If you want to add it - print 'add'"
  
+
 @user_error
 def greeting_hello():
     return "Hello! How can i help you?"
 
+
 @user_error
 def show_all_nums():
-    return nums
+    return contacts
+
 
 def unknown(*args):
     return "Unknown or not enough params. Try again."
